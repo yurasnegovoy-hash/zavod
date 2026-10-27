@@ -1,0 +1,634 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Контент-завод · Юра Снеговой</title>
+<meta name="description" content="Каждое утро нейросети собирают 3 рилса, 3 карусели и 10 постов в Threads. Научу собрать такой же контент-завод под тебя с нуля">
+<meta property="og:title" content="Контент-завод на нейросетях">
+<meta property="og:description" content="3 рилса, 3 карусели и 10 тредов каждое утро без монтажёра и сценариста">
+<meta property="og:image" content="media/reel1.jpg">
+<link rel="icon" href="media/avatar.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800;900&family=Oswald:wght@600;700&family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@1,700&display=swap" rel="stylesheet">
+<style>
+:root{--claude:#D97757;--cream:#F6F0E4;--ink:#141414;--blue:#1F4BFF;--coral:#FF5A1F;--lime:#C6F432;--white:#fff;--dim:rgba(20,20,20,.62);--line:rgba(20,20,20,.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--cream);color:var(--ink);font:17px/1.55 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.w{max-width:1160px;margin:0 auto;padding:0 20px}
+.h{font-family:Unbounded,sans-serif;font-weight:900;letter-spacing:-.02em;line-height:1.02;text-transform:uppercase}
+.serif{font-family:'Playfair Display',serif;font-style:italic;font-weight:700;text-transform:none;letter-spacing:0}
+.chip{display:inline-flex;align-items:center;gap:8px;font:800 13px/1 Unbounded,sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:9px 14px;border-radius:999px;background:var(--ink);color:var(--white)}
+.chip i{width:8px;height:8px;border-radius:4px;background:var(--coral);display:block}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;font:800 15px/1 Unbounded,sans-serif;text-transform:uppercase;letter-spacing:.02em;padding:20px 26px;border-radius:18px;border:0;cursor:pointer;transition:transform .15s ease,box-shadow .15s ease}
+.btn:hover{transform:translateY(-2px)}
+.btn.blue{background:var(--blue);color:#fff;box-shadow:0 10px 0 -2px #0f2fb8}
+.btn.lime{background:var(--lime);color:var(--ink);box-shadow:0 10px 0 -2px #8fb81a}
+.btn.ghost{background:transparent;color:var(--ink);border:2px solid var(--ink)}
+.btn.dark{background:var(--ink);color:#fff}
+
+nav{position:sticky;top:0;z-index:50;background:rgba(246,240,228,.86);backdrop-filter:blur(12px);border-bottom:1px solid var(--line)}
+nav .w{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:10px;font:900 15px Unbounded,sans-serif;text-transform:uppercase}
+.logo img{width:36px;height:36px;border-radius:50%}
+nav .links{display:flex;gap:26px;font-weight:600;font-size:15px}
+nav .links a:hover{color:var(--blue)}
+@media(max-width:820px){nav .links{display:none}}
+
+/* hero: огромный заголовок, вырезанный двойник поверх букв (референс Gravity Off, Behance) */
+.hero{padding:18px 12px 0}
+.stage{position:relative;border-radius:40px;overflow:hidden;min-height:760px;color:#fff;
+  background:radial-gradient(120% 80% at 70% 0%,#6E8BFF 0%,transparent 60%),radial-gradient(90% 70% at 0% 100%,#0B2BD6 0%,transparent 70%),linear-gradient(180deg,#2F5BFF,#1F4BFF 55%,#1638D8)}
+.stage:before{content:"";position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.18) 1.5px,transparent 1.5px);background-size:28px 28px;mask:linear-gradient(180deg,#000,transparent 70%)}
+.stage .top{position:relative;z-index:4;display:flex;justify-content:space-between;align-items:center;padding:26px 34px}
+.stage .top .chip{background:rgba(255,255,255,.14);backdrop-filter:blur(8px)}
+.giant{position:absolute;z-index:1;left:0;right:0;top:92px;text-align:center;font:700 clamp(84px,17.5vw,252px)/.86 Oswald,sans-serif;text-transform:uppercase;letter-spacing:-.01em;white-space:nowrap}
+.giant span{display:block}.giant .l2{color:var(--lime)}
+.cutout{position:absolute;z-index:2;left:50%;bottom:-110px;transform:translateX(-50%);height:88%;max-height:700px;filter:drop-shadow(0 30px 40px rgba(0,0,0,.35))}
+.stage .bl{position:absolute;z-index:4;left:34px;bottom:96px;max-width:350px}
+.stage .bl p{font-size:17px;line-height:1.45;margin-bottom:18px;color:rgba(255,255,255,.92)}
+.mbr{display:none}
+.plate{background:rgba(255,255,255,.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.22);border-radius:22px;padding:16px;margin-bottom:14px}
+.pl-t{font:800 13px/1.2 Unbounded,sans-serif;text-transform:uppercase;letter-spacing:.03em;opacity:.85}
+.pills{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.pills span{background:#fff;color:var(--ink);border-radius:14px;padding:9px 6px;text-align:center;font:600 13px/1.1 Inter,sans-serif}
+.pills b{display:block;font:700 30px/1 Oswald,sans-serif;color:var(--blue);margin-bottom:2px}
+.pills span:nth-child(3) b{color:var(--coral)}
+.pl-b{font-size:15px;line-height:1.45;color:rgba(255,255,255,.92)}.pl-b b{color:var(--lime)}
+.micro{font-size:13px;color:rgba(255,255,255,.7);margin-top:12px;line-height:1.4}
+.stage .br{position:absolute;z-index:4;right:34px;bottom:96px;text-align:right}
+.stage .br .n{font:700 76px/1 Oswald,sans-serif;color:var(--lime)}
+.stage .br .t{font-size:14px;max-width:190px;margin-left:auto;color:rgba(255,255,255,.85)}
+.float{position:absolute;z-index:3;font:800 14px/1.2 Unbounded,sans-serif;text-transform:uppercase;padding:12px 16px;border-radius:16px;box-shadow:0 14px 28px -10px rgba(0,0,0,.4)}
+.f1{background:var(--lime);color:var(--ink);left:29%;top:74%;transform:rotate(-7deg)}
+.f2{background:var(--coral);color:#fff;right:17%;top:46%;transform:rotate(6deg)}
+.f3{background:#fff;color:var(--ink);right:24%;top:70%;transform:rotate(-3deg)}
+.cloud{position:relative;z-index:5;height:70px;margin-top:-69px;background:var(--cream);
+  -webkit-mask:radial-gradient(60px 46px at 50% 100%,#000 98%,transparent) 0 0/120px 70px repeat-x;mask:radial-gradient(60px 46px at 50% 100%,#000 98%,transparent) 0 0/120px 70px repeat-x}
+@media(max-width:900px){.stage .top>span:last-child{display:none}nav .btn{display:none}.stage{min-height:0;padding-bottom:70px}.giant{position:relative;top:0;margin-top:6px}.cutout{position:relative;display:block;left:auto;bottom:auto;transform:none;height:auto;width:78%;max-width:340px;margin:-40px auto 0}.mbr{display:inline}.stage .top{justify-content:center}.stage .top .chip{text-align:center;line-height:1.25;padding:10px 16px}.stage .bl{position:relative;left:auto;right:auto;bottom:auto;padding:0 18px;max-width:400px;margin:-24px auto 0;text-align:center}.plate{text-align:center}.stage .bl .btn{display:flex;width:100%;margin:0}.micro{text-align:center}.stage .br,.float{display:none}.stage .top{padding:20px}}
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:0;margin-top:10px;border-top:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+.stats div{padding:26px 20px;border-right:2px solid var(--ink)}
+.stats div:last-child{border-right:0}
+.stats b{display:block;font:700 64px/1 Oswald,sans-serif;color:var(--blue)}
+.stats span{font-size:15px;color:var(--dim)}
+@media(max-width:720px){.stats{grid-template-columns:1fr 1fr}.stats div:nth-child(2){border-right:0}.stats div:nth-child(-n+2){border-bottom:2px solid var(--ink)}}
+/* bento */
+.bento{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:220px;gap:14px;margin-top:44px}
+.bento>div{border-radius:26px;overflow:hidden;position:relative;padding:24px}
+.bento h4{font:800 17px/1.2 Unbounded,sans-serif;text-transform:uppercase}
+.bento p{font-size:14.5px;margin-top:8px;opacity:.8}
+.b-big{grid-column:span 2;grid-row:span 2;background:var(--ink);color:#fff}
+.b-big img{position:absolute;right:-30px;bottom:-40px;width:62%;border-radius:18px;transform:rotate(-6deg);box-shadow:0 20px 40px rgba(0,0,0,.5)}
+.b-big img.s2{right:34%;bottom:-70px;width:46%;transform:rotate(5deg);opacity:.95}
+.b-vid{grid-row:span 2;background:#000;padding:0!important}
+.b-vid video{width:100%;height:100%;object-fit:cover}
+.b-vid .lbl{position:absolute;left:14px;top:14px;background:var(--lime);color:var(--ink);font:800 12px Unbounded,sans-serif;padding:8px 12px;border-radius:999px;text-transform:uppercase}
+.b-lime{background:var(--lime)}.b-blue{background:var(--blue);color:#fff}.b-coral{background:var(--coral);color:#fff}.b-white{background:#fff;border:2px solid var(--line)}
+.b-n{font:700 70px/1 Oswald,sans-serif}
+@media(max-width:900px){.bento{grid-template-columns:1fr 1fr;grid-auto-rows:200px}.b-big{grid-column:span 2}}
+@media(max-width:520px){.bento{grid-template-columns:1fr}.b-big,.b-vid{grid-column:auto}.b-vid{grid-row:span 2}}
+
+/* marquee */
+.marquee{background:var(--ink);color:var(--cream);overflow:hidden;white-space:nowrap;padding:18px 0;transform:rotate(-1.2deg);margin:30px -20px 0}
+.marquee div{display:inline-block;animation:mq 40s linear infinite;font:900 22px Unbounded,sans-serif;text-transform:uppercase}
+.marquee span{margin:0 26px}.marquee em{color:var(--lime);font-style:normal}
+@keyframes mq{to{transform:translateX(-50%)}}
+
+section{padding:90px 0}
+.sec-h{font-size:clamp(30px,4.6vw,56px);margin:16px 0 18px;max-width:900px}
+.sec-p{font-size:19px;color:var(--dim);max-width:680px}
+
+/* daily */
+.daily{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:44px}
+.tile{border-radius:26px;padding:26px;min-height:220px;display:flex;flex-direction:column;justify-content:space-between}
+.tile .n{font:900 64px/1 Unbounded,sans-serif}
+.tile h3{font:800 18px/1.2 Unbounded,sans-serif;text-transform:uppercase;margin-top:14px}
+.tile p{font-size:15px;margin-top:8px;opacity:.8}
+.t-blue{background:var(--blue);color:#fff}.t-ink{background:var(--ink);color:#fff}.t-lime{background:var(--lime)}.t-coral{background:var(--coral);color:#fff}
+@media(max-width:900px){.daily{grid-template-columns:1fr 1fr}}
+@media(max-width:520px){.daily{grid-template-columns:1fr}}
+
+/* proof */
+.proof{background:var(--ink);color:var(--cream);border-radius:40px;margin:0 12px}
+.proof .sec-p{color:rgba(246,240,228,.7)}
+.car-nav{display:flex;gap:10px;justify-content:flex-end;margin-top:-56px;margin-bottom:22px}
+.arr{width:52px;height:52px;border-radius:50%;border:2px solid rgba(246,240,228,.35);background:transparent;color:var(--cream);font:800 20px Unbounded,sans-serif;cursor:pointer}
+.arr:hover{background:var(--lime);color:var(--ink);border-color:var(--lime)}
+.track{display:flex;gap:18px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 2px 14px;scrollbar-width:none;cursor:grab;align-items:flex-start}
+.track::-webkit-scrollbar{display:none}
+.track.drag{cursor:grabbing;scroll-snap-type:none}
+.it{flex:none;scroll-snap-align:start;margin:0}
+.it.v{width:250px}.it.c{width:356px}
+.it .ph{aspect-ratio:9/16;border-radius:28px;overflow:hidden;border:6px solid #2a2a2a;background:#000}
+.it video{width:100%;height:100%;object-fit:cover;display:block}
+.it img{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:18px;display:block;pointer-events:none}
+.it figcaption{margin-top:10px;font-size:14px;color:rgba(246,240,228,.7);max-width:100%}
+@media(max-width:720px){.car-nav{display:none}.it.v{width:200px}.it.c{width:280px}}
+/* sum, vs, who */
+.sum{margin-top:26px;font-size:19px;max-width:820px;color:var(--dim)}.sum b{color:var(--ink)}
+.vs-sec{padding-top:40px}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:40px}
+.vs-col{border-radius:28px;padding:30px 28px}
+.vs-col.old{background:#fff;border:2px solid var(--line);color:var(--dim)}
+.vs-col.new{background:var(--ink);color:#fff}
+.vs-h{font:900 22px Unbounded,sans-serif;text-transform:uppercase;margin-bottom:18px}
+.vs-col.old .vs-h{color:var(--ink);text-decoration:line-through;text-decoration-color:var(--coral);text-decoration-thickness:4px}
+.vs-col.new .vs-h{color:var(--lime)}
+.vs ul{list-style:none;display:grid;gap:12px;font-size:16px;line-height:1.45}
+.vs li{position:relative;padding-left:28px}
+.vs li:before{position:absolute;left:0;top:0;font-weight:900}
+.vs-col.old li:before{content:"✕";color:var(--coral)}
+.vs-col.new li:before{content:"✓";color:var(--lime)}
+.vs-col.new b{color:var(--lime)}
+.vs-note{margin-top:22px;padding:16px 18px;border-radius:16px;background:var(--lime);color:var(--ink);font-weight:700;font-size:15.5px}
+.who{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}
+.who-c{background:#fff;border:2px solid var(--line);border-radius:26px;padding:26px}
+.who-i{font-size:34px}
+.who-c h3{font:800 18px/1.2 Unbounded,sans-serif;text-transform:uppercase;margin:12px 0 8px}
+.who-c p{font-size:15.5px;color:var(--dim)}
+@media(max-width:900px){.vs,.who{grid-template-columns:1fr}}
+@media(max-width:600px){.sum{font-size:16px}.vs{margin-top:26px}.vs-col{padding:22px 18px;border-radius:22px}.vs-h{font-size:18px}.vs ul{font-size:14.5px}.who{margin-top:26px}.who-c{padding:22px}}
+/* how */
+.steps{margin-top:44px;display:grid;gap:14px}
+.step{display:grid;grid-template-columns:90px 1fr auto;gap:24px;align-items:center;padding:26px 30px;border-radius:24px;background:#fff;border:2px solid var(--line)}
+.step .num{font:900 42px Unbounded,sans-serif;color:var(--blue)}
+.step h3{font:800 20px/1.2 Unbounded,sans-serif;text-transform:uppercase}
+.step p{color:var(--dim);margin-top:6px}
+.step .tag{font:700 12px/1 Unbounded,sans-serif;text-transform:uppercase;padding:9px 12px;border-radius:999px;background:var(--claude);color:#fff;white-space:nowrap}
+@media(max-width:720px){.step{grid-template-columns:1fr;gap:8px}.step .tag{justify-self:start}}
+
+/* pricing */
+.plans{display:grid;grid-template-columns:1fr 1.15fr 1fr;gap:18px;margin-top:48px;align-items:stretch}
+.plan{border-radius:30px;padding:32px 28px;background:#fff;border:2px solid var(--line);display:flex;flex-direction:column;position:relative}
+.plan.hit{background:var(--blue);color:#fff;border-color:var(--blue);transform:translateY(-14px);box-shadow:0 30px 60px -24px rgba(31,75,255,.6)}
+.plan .badge{position:absolute;top:-16px;left:28px;background:var(--lime);color:var(--ink);font:800 13px Unbounded,sans-serif;text-transform:uppercase;padding:9px 14px;border-radius:999px}
+.plan .lbl{font:800 13px Unbounded,sans-serif;text-transform:uppercase;letter-spacing:.06em;opacity:.7}
+.plan h3{font:900 22px/1.12 Unbounded,sans-serif;text-transform:uppercase;margin:12px 0 8px}
+.plan .for{font-size:15px;opacity:.75}
+.plan .price{font:900 46px/1 Unbounded,sans-serif;margin:24px 0 4px}
+.plan .price small{font-size:16px;font-weight:600;opacity:.7}
+.plan ul{list-style:none;margin:22px 0 28px;display:grid;gap:11px;font-size:15.5px}
+.plan li{display:grid;grid-template-columns:22px 1fr;gap:8px}
+.plan li:before{content:"✓";font-weight:900;color:var(--blue)}
+.plan.hit li:before{color:var(--lime)}
+.plan .btn{margin-top:auto;width:100%}
+.ctr{margin:14px 0 2px;opacity:0;transition:opacity .4s}.ctr.on{opacity:1}
+.ctr-t{display:flex;justify-content:space-between;gap:10px;font-size:13px;opacity:.85}.ctr-t span:last-child{white-space:nowrap}
+.ctr-bar{height:10px;border-radius:5px;background:rgba(20,20,20,.1);margin:8px 0 6px;overflow:hidden}
+.ctr-bar i{display:block;height:100%;width:0;background:var(--coral);border-radius:5px;transition:width .8s ease}
+.plan.hit .ctr-bar{background:rgba(255,255,255,.2)}.plan.hit .ctr-bar i{background:var(--lime)}
+.ctr-n{font-size:12px;opacity:.6}
+.modal{position:fixed;inset:0;z-index:100;background:rgba(20,20,20,.6);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px}
+.modal[hidden]{display:none}
+.mbox{position:relative;background:var(--cream);border-radius:28px;padding:30px 26px;width:100%;max-width:420px}
+.mbox .lbl{font:800 13px Unbounded,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--blue)}
+.mbox h3{font:900 24px/1.1 Unbounded,sans-serif;text-transform:uppercase;margin:8px 0 6px}
+.m-price{font:700 40px/1 Oswald,sans-serif;margin-bottom:18px}
+.mbox input{width:100%;font:500 17px Inter,sans-serif;padding:16px 18px;border-radius:16px;border:2px solid var(--line);background:#fff;margin-bottom:12px}
+.mbox input:focus{outline:none;border-color:var(--blue)}
+.mbox .btn{width:100%}
+.m-note{font-size:13px;color:var(--dim);margin-top:12px;text-align:center}
+.mx{position:absolute;right:14px;top:10px;border:0;background:none;font-size:30px;cursor:pointer;color:var(--dim)}
+.pm{font-size:13px;opacity:.7;margin-top:12px;line-height:1.4}
+.plan.hit .btn{background:var(--lime);color:var(--ink);box-shadow:0 10px 0 -2px #8fb81a}
+@media(max-width:960px){.plans{grid-template-columns:1fr}.plan.hit{transform:none}}
+
+/* program */
+.prog{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:44px}
+.box{background:#fff;border-radius:28px;padding:28px;border:2px solid var(--line)}
+.box h3{font:900 20px Unbounded,sans-serif;text-transform:uppercase;display:flex;justify-content:space-between;gap:12px;align-items:center}
+.box h3 span{font-size:13px;background:var(--ink);color:#fff;padding:8px 12px;border-radius:999px;white-space:nowrap}
+details{border-top:1px solid var(--line);padding:16px 0}
+details:first-of-type{margin-top:18px}
+summary{cursor:pointer;list-style:none;display:grid;grid-template-columns:44px 1fr 20px;gap:10px;font-weight:700;font-size:16.5px;align-items:start}
+summary::-webkit-details-marker{display:none}
+summary b{font:900 14px Unbounded,sans-serif;color:var(--blue);padding-top:3px}
+summary:after{content:"+";font:800 20px Unbounded,sans-serif;color:var(--dim);line-height:1}
+details[open] summary:after{content:"−"}
+details p{margin:8px 0 0 54px;color:var(--dim);font-size:15.5px}
+@media(max-width:900px){.prog{grid-template-columns:1fr}}
+
+/* inside kit */
+.kit{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:44px}
+.kit .k{border-radius:24px;padding:24px;background:#fff;border:2px solid var(--line)}
+.kit .k .ic{font-size:30px}
+.kit .k h4{font:800 16px/1.25 Unbounded,sans-serif;text-transform:uppercase;margin:12px 0 6px}
+.kit .k p{font-size:15px;color:var(--dim)}
+@media(max-width:900px){.kit{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.kit{grid-template-columns:1fr}}
+
+/* about */
+.about .w{display:grid;grid-template-columns:.8fr 1.2fr;gap:50px;align-items:center}
+.about .pic{position:relative}
+.about .pic img.photo{width:100%;border-radius:32px;display:block;aspect-ratio:1/1;object-fit:cover;object-position:50% 30%}
+.about .pic img.masc{position:absolute;width:150px;right:-30px;bottom:-30px;border-radius:50%;border:6px solid var(--cream)}
+.about blockquote{font-family:'Playfair Display',serif;font-style:italic;font-size:28px;line-height:1.25;margin:26px 0;color:var(--blue)}
+.about p{font-size:18px;color:var(--dim);margin-top:14px}
+.about p b{color:var(--ink)}
+.me-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:8px 0 22px}
+.me-stats div{background:#fff;border:2px solid var(--line);border-radius:20px;padding:16px}
+.me-stats b{display:block;font:700 34px/1 Oswald,sans-serif;color:var(--blue)}
+.me-stats span{display:block;font-size:13.5px;color:var(--dim);margin-top:6px;line-height:1.35}
+@media(max-width:600px){.me-stats{grid-template-columns:1fr;gap:8px}.me-stats div{display:flex;align-items:center;gap:14px;padding:12px 16px}.me-stats b{font-size:28px;min-width:118px}.me-stats span{margin:0}}
+@media(max-width:860px){.about .w{grid-template-columns:1fr}.about .pic{max-width:380px}}
+
+/* faq */
+.faq{max-width:860px}
+.faq details summary{grid-template-columns:1fr 20px;font-size:18px}
+.faq details p{margin-left:0}
+
+/* final */
+.final{background:var(--blue);color:#fff;border-radius:40px;margin:0 12px;text-align:center;overflow:hidden;position:relative}
+.final .sec-h{margin:18px auto}
+.final .sec-p{color:rgba(255,255,255,.8);margin:0 auto}
+.final .ctas{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;margin-top:34px}
+.final .btn.ghost{color:#fff;border-color:#fff}
+footer{padding:50px 0 60px;font-size:14px;color:var(--dim)}
+footer .w{display:flex;flex-wrap:wrap;gap:16px 30px;justify-content:space-between}
+footer a{text-decoration:underline}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.reveal.in{opacity:1;transform:none}
+/* телефон: плотнее отступы, заголовки не вылезают, карточки компактнее */
+@media(max-width:600px){
+  body{font-size:16px}
+  .w{padding:0 18px}
+  section{padding:58px 0}
+  .sec-h{font-size:25px;line-height:1.08;margin:14px 0 12px;letter-spacing:-.03em}
+  .sec-p{font-size:16px}
+  .chip{font-size:11px;padding:8px 12px}
+  .btn{padding:18px 20px;font-size:14px;border-radius:16px}
+  .marquee{padding:13px 0;margin-top:14px}.marquee div{font-size:16px}
+  .stats b{font-size:46px}.stats div{padding:18px 8px}.stats span{font-size:11.5px}
+  .daily{gap:12px;margin-top:28px}.tile{min-height:0;padding:22px;border-radius:22px}.tile .n{font-size:46px}.tile h3{font-size:16px}
+  .proof,.final{border-radius:28px;margin:0 8px}
+  .steps{margin-top:28px}.step{padding:20px;border-radius:20px}.step .num{font-size:30px}.step h3{font-size:15px}.step p{font-size:14.5px}
+  .plans{margin-top:34px;gap:22px}.plan{padding:28px 20px;border-radius:24px}.plan h3{font-size:19px}.plan .price{font-size:36px}.plan ul{font-size:14.5px}
+  .prog{margin-top:28px}.box{padding:20px;border-radius:22px}.box h3{font-size:16px}
+  summary{font-size:15px;grid-template-columns:36px 1fr 18px}details p{margin-left:46px;font-size:14.5px}
+  .faq details summary{font-size:16px}
+  .bento{grid-auto-rows:auto;gap:12px;margin-top:28px}.bento>div{min-height:160px;border-radius:22px}.bento .b-big{min-height:420px}.bento .b-vid{min-height:520px}.bento>div[style]{grid-column:auto!important}.b-big h4,.b-big p{position:relative;z-index:2}.b-big img{width:50%;bottom:-40px}.b-big img.s2{width:42%;right:40%;bottom:-60px}
+  .about .w{gap:40px}.about blockquote{font-size:22px;margin:16px 0}.about p{font-size:16px}.about .pic img.masc{width:110px;right:-10px;bottom:-20px}
+  .final .sec-h{font-size:30px}.final .ctas .btn{width:100%}
+  .hero .stage{border-radius:28px}
+  footer .w{flex-direction:column}
+}
+@media (prefers-reduced-motion:reduce){.marquee div{animation:none}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+
+<nav><div class="w">
+  <a class="logo" href="#"><img src="media/avatar.png" alt="">Нейросетевой</a>
+  <div class="links"><a href="#how">Как работает</a><a href="#plans">Тарифы</a><a href="#program">Программа</a><a href="#faq">Вопросы</a></div>
+  <a class="btn dark" href="#plans" style="padding:13px 18px;font-size:13px">Выбрать тариф</a>
+</div></nav>
+
+<header class="hero">
+  <div class="stage">
+    <div class="top"><span class="chip"><i></i><span>Нейросети делают<br class="mbr"> контент за тебя</span></span><span style="font:800 13px Unbounded,sans-serif;text-transform:uppercase;opacity:.85">3 рилса · 3 карусели · 10 тредов</span></div>
+    <div class="giant"><span>Контент</span><span class="l2">завод</span></div>
+    <img class="cutout" src="media/mascot_cut.webp" alt="Маскот Нейросетевого">
+    <div class="float f1">ИИ-агенты<br>работают 24/7 🤖</div>
+    <div class="float f2">готово к 8:00</div>
+    <div class="float f3">смонтировал код</div>
+    <div class="bl">
+      <div class="plate">
+        <div class="pl-t">Каждое утро нейросети собирают мне</div>
+        <div class="pills"><span><b>3</b>рилса</span><span><b>3</b>карусели</span><span><b>10</b>тредов</span></div>
+        <div class="pl-b">Бот сам отвечает в директ, а я трачу <b>10&nbsp;минут утром</b>. Покажу, как собрать такой же завод под тебя с нуля</div>
+      </div>
+      <a class="btn lime" href="#plans">Собрать свой завод</a>
+      <div class="micro">Без монтажёра, сценариста и навыков программирования. Доступ сразу и навсегда</div>
+    </div>
+    <div class="br"><div class="n">0</div><div class="t">монтажёров, сценаристов и SMM-щиков в команде</div></div>
+  </div>
+  <div class="cloud"></div>
+<div class="marquee"><div>
+  <span>3 рилса</span><span><em>✦</em></span><span>3 карусели</span><span><em>✦</em></span><span>10 тредов</span><span><em>✦</em></span><span>директ-бот</span><span><em>✦</em></span><span>цифровой двойник</span><span><em>✦</em></span><span>каждый день</span><span><em>✦</em></span>
+  <span>3 рилса</span><span><em>✦</em></span><span>3 карусели</span><span><em>✦</em></span><span>10 тредов</span><span><em>✦</em></span><span>директ-бот</span><span><em>✦</em></span><span>цифровой двойник</span><span><em>✦</em></span><span>каждый день</span><span><em>✦</em></span>
+</div></div>
+</header>
+
+<div class="w"><div class="stats">
+  <div><b>60</b><span>англоязычных ИИ-авторов разобрано на молекулы</span></div>
+  <div><b>112</b><span>залетевших рилсов в библиотеке форматов</span></div>
+  <div><b>39</b><span>каруселей с разбором дизайна</span></div>
+  <div><b>16</b><span>постов, роликов<br>и каруселей каждый день</span></div>
+</div></div>
+
+<section><div class="w">
+  <span class="chip"><i></i>Каждое утро</span>
+  <h2 class="h sec-h reveal">Что завод делает,<br>пока ты спишь</h2>
+  <p class="sec-p reveal">Ты просыпаешься, открываешь Telegram и утверждаешь готовое. Всё остальное делают нейросети</p>
+  <div class="daily">
+    <div class="tile t-blue reveal"><div class="n">3</div><div><h3>Рилса</h3><p>С твоим цифровым двойником или из живой записи, с анимацией, субтитрами и звуками</p></div></div>
+    <div class="tile t-ink reveal"><div class="n">3</div><div><h3>Карусели</h3><p>Шаги, тир-листы, батлы нейросетей в твоих цветах</p></div></div>
+    <div class="tile t-lime reveal"><div class="n">10</div><div><h3>Постов в Threads</h3><p>Новости ИИ из первоисточников и адаптации залетевших англоязычных тредов</p></div></div>
+    <div class="tile t-coral reveal"><div class="n">∞</div><div><h3>Ответов в директ</h3><p>Человек пишет кодовое слово, бот присылает обещанный гайд</p></div></div>
+  </div>
+  <p class="sum reveal">Итого <b>16 единиц контента в день</b> и директ, который сам собирает заявки. Руками это работа сценариста, монтажёра и SMM-щика на полный день. У тебя это 10 минут утром с телефона</p>
+</div></section>
+
+<section class="vs-sec"><div class="w">
+  <span class="chip"><i></i>Честная математика</span>
+  <h2 class="h sec-h reveal">Сколько стоит контент, если делать руками</h2>
+  <div class="vs">
+    <div class="vs-col old reveal">
+      <div class="vs-h">Руками</div>
+      <ul>
+        <li><b>3–4 часа в день</b> на сценарий, съёмку и монтаж одного ролика. Или монтажёр от 50 000 ₽ в месяц</li>
+        <li>Идеи из головы: половина роликов не залетает, потому что тема никому не нужна</li>
+        <li>Карусели и Threads «когда будет время». Времени нет никогда</li>
+        <li>Заявки в директе теряются: написали ТОКЕНЫ, а ты увидел через два дня</li>
+        <li>Неделя без тебя равна неделе без контента</li>
+      </ul>
+    </div>
+    <div class="vs-col new reveal">
+      <div class="vs-h">Контент-завод</div>
+      <ul>
+        <li><b>10 минут утром</b>: открыл Telegram, утвердил готовое. Подписка Claude от 20 $ в месяц</li>
+        <li>Идеи только из роликов, которые уже залетели в твоей нише. Купленный охват отсеивается</li>
+        <li>Карусели и 10 тредов выходят каждый день сами</li>
+        <li>Бот отвечает в директ за 2 минуты и ведёт на твой продукт</li>
+        <li>Уехал на неделю, завод работает. Вернулся, контент вышел</li>
+      </ul>
+      <div class="vs-note">Один клиент на контент для бизнеса или одна продажа своего продукта окупает завод целиком</div>
+    </div>
+  </div>
+</div></section>
+
+<section class="who-sec"><div class="w">
+  <span class="chip"><i></i>Для кого</span>
+  <h2 class="h sec-h reveal">Кому завод нужен уже сейчас</h2>
+  <div class="who">
+    <div class="who-c reveal"><div class="who-i">🎙</div><h3>Эксперту</h3><p>Психолог, юрист, нутрициолог, коуч. Ты знаешь тему, но контент съедает вечера. Завод делает ролики из твоих знаний, а директ собирает заявки на консультации</p></div>
+    <div class="who-c reveal"><div class="who-i">🏪</div><h3>Предпринимателю</h3><p>Кафе, студия, магазин, услуги. Контент нужен каждый день, а нанимать SMM-щика дорого и бесполезно без контроля. Теперь контент идёт сам, ты только утверждаешь</p></div>
+    <div class="who-c reveal"><div class="who-i">💼</div><h3>SMM-щику и монтажёру</h3><p>Вместо 3 клиентов ведёшь 10, не нанимая никого. Ставишь завод каждому клиенту за свою цену, это новая услуга с маржой</p></div>
+  </div>
+</div></section>
+
+<section class="proof" id="proof"><div class="w">
+  <span class="chip" style="background:var(--lime);color:var(--ink)"><i></i>Без монтажёра</span>
+  <h2 class="h sec-h reveal">Это смонтировала система. Целиком</h2>
+  <p class="sec-p reveal">Сценарий, двойник, анимации, субтитры, звук и карусели. Ни одного кадра руками</p>
+  <div class="car-nav"><button class="arr" data-d="-1" aria-label="Назад">←</button><button class="arr" data-d="1" aria-label="Вперёд">→</button></div>
+  <div class="track" id="track">
+    <figure class="it v"><div class="ph"><video src="media/reel1.mp4" poster="media/reel1.jpg" autoplay muted loop playsinline preload="metadata"></video></div><figcaption>Рилс: «команда → результат», вырезанный двойник</figcaption></figure>
+    <figure class="it c"><img src="media/car1.webp" alt="" loading="lazy"><figcaption>Карусель: обложка</figcaption></figure>
+    <figure class="it c"><img src="media/car2.webp" alt="" loading="lazy"><figcaption>Карусель: шаг с мокапом чата</figcaption></figure>
+    <figure class="it v"><div class="ph"><video src="media/reel2.mp4" poster="media/reel2.jpg" autoplay muted loop playsinline preload="metadata"></video></div><figcaption>Рилс: экран пополам</figcaption></figure>
+    <figure class="it c"><img src="media/tier1.webp" alt="" loading="lazy"><figcaption>Тир-лист: обложка</figcaption></figure>
+    <figure class="it c"><img src="media/tier2.webp" alt="" loading="lazy"><figcaption>Тир-лист: хайп против пользы</figcaption></figure>
+    <figure class="it c"><img src="media/tier4.webp" alt="" loading="lazy"><figcaption>Батл нейросетей</figcaption></figure>
+    <figure class="it v"><div class="ph"><video src="media/reel3.mp4" poster="media/reel3.jpg" autoplay muted loop playsinline preload="metadata"></video></div><figcaption>Рилс: видеовставки нейросетью</figcaption></figure>
+    <figure class="it c"><img src="media/car4.webp" alt="" loading="lazy"><figcaption>Карусель: шаг</figcaption></figure>
+    <figure class="it c"><img src="media/car6.webp" alt="" loading="lazy"><figcaption>Карусель: призыв со словом</figcaption></figure>
+  </div>
+</div>
+</div></section>
+
+<section id="how"><div class="w">
+  <span class="chip"><i></i>Как это устроено</span>
+  <h2 class="h sec-h reveal">5 шагов от чужого хита до твоего поста</h2>
+  <div class="steps">
+    <div class="step reveal"><div class="num">01</div><div><h3>Находит то, что уже залетело</h3><p>Собирает ролики ниши с цифрами и отсеивает купленный охват. Идеи только проверенные</p></div><div class="tag">банк хитов</div></div>
+    <div class="step reveal"><div class="num">02</div><div><h3>Пишет сценарий под тебя</h3><p>Хук в первую секунду, одна мысль, призыв со своим кодовым словом. По формулам из разбора 60 англоязычных авторов</p></div><div class="tag">Claude</div></div>
+    <div class="step reveal"><div class="num">03</div><div><h3>Озвучивает твоим двойником</h3><p>Цифровой двойник из 4 минут записи. Или снимаешь пачку дублей на телефон, а система сама режет паузы и чистит звук</p></div><div class="tag">HeyGen или телефон</div></div>
+    <div class="step reveal"><div class="num">04</div><div><h3>Монтирует кодом</h3><p>Анимации, субтитры по словам, переходы и звуки в твоих цветах. Карусели из тех же шаблонов</p></div><div class="tag">шаблоны</div></div>
+    <div class="step reveal"><div class="num">05</div><div><h3>Публикует и продаёт</h3><p>Ставит в очередь Instagram и Threads, отвечает в директ гайдом, а в гайде ведёт на твой продукт</p></div><div class="tag">автопилот</div></div>
+  </div>
+</div></section>
+
+<section id="plans" style="padding-top:40px"><div class="w">
+  <span class="chip"><i></i>Тарифы</span>
+  <h2 class="h sec-h reveal">Выбери, с чего начать</h2>
+  <div class="plans">
+    <div class="plan reveal">
+      <div class="lbl">Старт</div>
+      <h3>Старт в Claude с нуля</h3>
+      <div class="for">Если ты ещё ни разу не открывал Claude или открыл и не понял, что с ним делать</div>
+      <div class="price"><span data-price="start">990</span> ₽</div>
+      <div class="ctr" data-ctr="start"><div class="ctr-t"><span>Продано <b data-f="in_tier">0</b> из 10 по этой цене</span><span>дальше <b data-f="next_price">…</b></span></div><div class="ctr-bar"><i data-f="bar"></i></div><div class="ctr-n">Каждые 10 продаж цена растёт на 20%</div></div>
+      <ul>
+        <li>Квест из 10 уровней: проходишь шаг за шагом, видишь прогресс</li>
+        <li>Подключение из России: аккаунт, VPN, оплата</li>
+        <li>Проекты и память: Claude знает тебя и твою работу</li>
+        <li>Файлы, сайты и таблицы без кода</li>
+        <li>Claude Code и твой первый агент</li>
+        <li>Живые уроки в записи</li>
+        <li>100 готовых команд с кнопкой «Скопировать»</li>
+      </ul>
+      <a class="btn ghost" data-pay="start" href="#">Начать квест за <span data-price="start">990</span> ₽</a>
+      <div class="pm">Доступ сразу после оплаты, навсегда. Одна задача из квеста, за которую заплатит клиент, окупает курс</div>
+    </div>
+    <div class="plan hit reveal">
+      <div class="badge">Главный</div>
+      <div class="lbl">Завод</div>
+      <h3>Контент-завод</h3>
+      <div class="for">Монтаж и автоматизация: система сама делает контент для YouTube, Reels и Threads</div>
+      <div class="price"><span data-price="zavod">4 990</span> ₽</div>
+      <div class="ctr" data-ctr="zavod"><div class="ctr-t"><span>Продано <b data-f="in_tier">0</b> из 10 по этой цене</span><span>дальше <b data-f="next_price">…</b></span></div><div class="ctr-bar"><i data-f="bar"></i></div><div class="ctr-n">Каждые 10 продаж цена растёт на 20%</div></div>
+      <ul>
+        <li>10 видео-модулей: от банка хитов до утреннего автопилота</li>
+        <li>YouTube и Shorts, Reels, Threads из одной системы</li>
+        <li>Стартовый набор завода: шаблоны монтажа и каруселей, все скрипты, ставится фразой «установи завод»</li>
+        <li>Библиотека форматов: 60 англоязычных авторов, 112 рилсов и 39 каруселей на молекулы</li>
+        <li>Директ-бот и автопостинг Instagram</li>
+                <li>Квест «Старт в Claude с нуля» в подарок</li>
+        <li>Чат участников 30 дней</li>
+      </ul>
+      <a class="btn" data-pay="zavod" href="#">Собрать завод за <span data-price="zavod">4 990</span> ₽</a>
+      <div class="pm">Доступ сразу и навсегда. Дешевле одной недели монтажёра, работает каждый день</div>
+    </div>
+    <div class="plan reveal">
+      <div class="lbl">Лично</div>
+      <h3>Личная консультация</h3>
+      <div class="for">Когда хочешь разобрать именно свою ситуацию со мной</div>
+      <div class="price">20 000 ₽ <small>· 1,5 часа</small></div>
+      <ul>
+        <li>Созвон со мной 1,5 часа</li>
+        <li>Разбор твоей ниши, упаковки и контента</li>
+        <li>План контент-завода под тебя: что делать в первую очередь</li>
+        <li>Воронка: рилсы → директ → продукт</li>
+        <li>Ответы на любые вопросы по нейросетям и автоматизации</li>
+      </ul>
+      <a class="btn dark" data-pay="consult" href="#">Записаться на консультацию</a>
+      <div class="pm">Уходишь с планом на месяц, а не с общими советами. Запись после консультации остаётся у тебя</div>
+    </div>
+  </div>
+</div></section>
+
+<section id="program"><div class="w">
+  <span class="chip"><i></i>Программа</span>
+  <h2 class="h sec-h reveal">Что внутри</h2>
+  <div class="prog">
+    <div class="box reveal">
+      <h3>Контент-завод <span>4 990 ₽</span></h3>
+      <details open><summary><b>00</b>Как устроен завод</summary><p>Вся схема целиком, сколько стоит в месяц и что можно выкинуть на старте</p></details>
+      <details><summary><b>01</b>Рабочее место</summary><p>Claude Code с нуля, подписки, сервер. Что обязательно, что по желанию</p></details>
+      <details><summary><b>02</b>Банк идей из конкурентов</summary><p>Собираешь 100+ залетевших роликов ниши с цифрами и раскладываешь каждый на хук, механику и призыв</p></details>
+      <details><summary><b>03</b>Сценарии, которые залетают</summary><p>Формулы хуков, 20–35 секунд, одна мысль, кодовое слово за конкретный файл, адаптация англоязычных хитов</p></details>
+      <details><summary><b>04</b>Двойник или живая съёмка</summary><p>Цифровой двойник в HeyGen без стеклянных глаз. Или дубли на телефон, которые система чистит сама</p></details>
+      <details><summary><b>05</b>Монтаж кодом</summary><p>Экран пополам, вырезанный двойник, «команда → результат», субтитры по словам. Меняешь цвета, дальше Claude монтирует сам</p></details>
+      <details><summary><b>06</b>Карусели</summary><p>Обложка, шаги с мокапами, тир-лист, батл, призыв. Какие форматы сохраняют лучше всего</p></details>
+      <details><summary><b>07</b>Threads на автопилоте</summary><p>10 постов в день: новости из первоисточников и адаптации залетевших тредов</p></details>
+      <details><summary><b>08</b>YouTube, Shorts и Reels</summary><p>Один ролик на все площадки, длинные видео для YouTube и автопостинг. Честно, где можно автоматически, а где проще руками</p></details>
+      <details><summary><b>09</b>Директ, который продаёт</summary><p>Слово в комментарии → гайд в директ → кнопка твоего продукта</p></details>
+      <details><summary><b>10</b>Утренний автопилот</summary><p>Задача по расписанию, которая собирает всё к 8 утра и присылает на утверждение</p></details>
+    </div>
+    <div class="box reveal">
+      <h3>Старт в Claude с нуля <span>990 ₽</span></h3>
+      <details open><summary><b>01</b>Заводим Claude</summary><p>Аккаунт, VPN и оплата из России. Первый полезный запрос за 15 минут</p></details>
+      <details><summary><b>02</b>Формула запроса</summary><p>Роль, задача, контекст, формат. Запросы, после которых не надо переспрашивать</p></details>
+      <details><summary><b>03</b>Проекты и память</summary><p>Свой помощник, который знает тебя, твою работу и твой стиль</p></details>
+      <details><summary><b>04</b>Файлы</summary><p>PDF, договоры, таблицы и фото: Claude читает и считает за тебя</p></details>
+      <details><summary><b>05</b>Сайты и таблицы без кода</summary><p>Артефакты: просишь словами, получаешь готовую страницу, калькулятор или игру</p></details>
+      <details><summary><b>06</b>Claude в телефоне</summary><p>Голосом в дороге, фото документа, быстрые ответы на ходу</p></details>
+      <details><summary><b>07</b>Коннекторы</summary><p>Почта, календарь и Google Диск: Claude работает с твоими данными</p></details>
+      <details><summary><b>08</b>Claude Code</summary><p>Ставим на компьютер и понимаем, что это за зверь, без программирования</p></details>
+      <details><summary><b>09</b>Первый агент</summary><p>Автоматизация рутины: Claude делает задачу сам по расписанию</p></details>
+      <details><summary><b>10</b>Первые деньги</summary><p>Услуги, которые можно продавать с Claude, цены и первое сообщение клиенту</p></details>
+      <details><summary><b>+</b>Живые уроки и 100 команд</summary><p>Записи живых разборов и библиотека готовых запросов для жизни, работы и бизнеса</p></details>
+    </div>
+  </div>
+</div></section>
+
+<section style="padding-top:20px"><div class="w">
+  <span class="chip"><i></i>Стартовый набор</span>
+  <h2 class="h sec-h reveal">Не теория. Готовый завод в одной папке</h2>
+  <p class="sec-p reveal">Открываешь папку в Claude Code, пишешь «установи завод», отвечаешь на вопросы про свой бренд. Через час первый рилс в твоих цветах</p>
+  <div class="bento">
+    <div class="b-big reveal"><h4>Шаблоны монтажа и каруселей</h4><p>Две раскладки рилса, 9 видов сцен, живые субтитры. Обложки, шаги, тир-листы и батлы в твоих цветах</p><img class="s2" src="media/car1.webp" alt=""><img src="media/tier2.webp" alt=""></div>
+    <div class="b-vid reveal"><span class="lbl">собрано кодом</span><video src="media/reel2.mp4" poster="media/reel2.jpg" autoplay muted loop playsinline></video></div>
+    <div class="b-lime reveal"><div class="b-n">1 фраза</div><p>«Установи завод», и Claude ставит всё сам</p></div>
+    <div class="b-blue reveal"><h4>Банк хитов</h4><p>Кидаешь ссылки, получаешь цифры, расшифровку и множитель против обычных роликов автора</p></div>
+    <div class="b-white reveal"><h4>Двойник или телефон</h4><p>Сценарий озвучивает двойник HeyGen. Или твоя запись без пауз, дублей и шума</p></div>
+    <div class="b-coral reveal"><h4>Директ-бот</h4><p>Слово под постом, гайд в директ, кнопка твоего продукта внизу</p></div>
+    <div class="b-white reveal" style="grid-column:span 2"><h4>Библиотека форматов</h4><p>60 англоязычных ИИ-авторов: какие хуки, монтаж, дизайн и призывы приносят просмотры. Утренняя задача сверяется с ней каждый день</p></div>
+  </div>
+</div></section>
+
+<section class="about"><div class="w">
+  <div class="pic reveal"><img class="photo" src="media/yura.webp?v=3" alt="Юра Снеговой"></div>
+  <div>
+    <span class="chip"><i></i>Кто я</span>
+    <h2 class="h sec-h reveal">Юра Снеговой</h2>
+    <blockquote class="reveal">«Всё, что я показываю в курсе, снято с моей рабочей системы»</blockquote>
+    <div class="me-stats reveal">
+      <div><b>$3 млн+</b><span>рекламного бюджета через мои кабинеты</span></div>
+      <div><b>~$500 тыс.</b><span>выручки запусков как продюсер</span></div>
+      <div><b>6 лет</b><span>в трафике для FinTech и EdTech</span></div>
+    </div>
+    <p class="reveal">Шесть лет веду трафик для <b>FinTech и EdTech</b> и продюсирую онлайн-запуски. Знаю, сколько стоит каждый подписчик и каждая продажа, поэтому завод заточен под заявки и деньги</p>
+    <p class="reveal">Сейчас живу на Бали 📍 и веду бизнес в соло с ИИ-агентами: сценарии пишет Claude, ролики монтирует код, в директ отвечает бот. Нейросети работают и в проектах, которые я веду: трейдинг-клуб, визовое агентство на Бали, wellness-проект с ботом-воронкой и Threads на автопилоте</p>
+    <p class="reveal"><b>Ролики на этой странице собрала та самая система, которую ты получишь.</b> Я только утверждаю готовое по утрам</p>
+  </div>
+</div></section>
+
+<section id="faq"><div class="w faq">
+  <span class="chip"><i></i>Вопросы</span>
+  <h2 class="h sec-h">Частые вопросы</h2>
+  <details><summary>Нужно уметь программировать?</summary><p>Нет. Всё ставит и запускает Claude Code. Ты пишешь ему обычными словами «установи завод» или «сделай ролики на сегодня» и отвечаешь на его вопросы</p></details>
+  <details><summary>Какой нужен компьютер?</summary><p>Mac или Windows. На Mac с процессором M расшифровка речи работает быстрее</p></details>
+  <details><summary>Сколько стоят сервисы в месяц?</summary><p>Обязательна только подписка Claude, от 20 $ в месяц. HeyGen для двойника и сервер для автопостинга по желанию: без них ролики делаются из твоей записи, а публикуешь сам</p></details>
+  <details><summary>Работает из России?</summary><p>Claude и ChatGPT официально недоступны в России: нужен VPN и зарубежная карта или сервис-посредник. В курсе показываю честно, как это решить, и даю бесплатные варианты без VPN</p></details>
+  <details><summary>Чем отличаются тарифы?</summary><p>«Старт в Claude» это квест с нуля: подключаешь Claude и учишься делать им реальные задачи. «Контент-завод» это монтаж и автоматизация контента для YouTube, Reels и Threads, квест в подарок. «Личная консультация» это 1,5 часа со мной: разбираем именно твою нишу и строим план</p></details>
+  <details><summary>Сколько времени это займёт у меня?</summary><p>Установка около часа один раз, Claude делает всё сам, ты отвечаешь на вопросы про бренд. Дальше 10–15 минут утром: посмотреть, что собрал завод, и утвердить. Если хочешь живые ролики вместо двойника, плюс полчаса в неделю на запись дублей</p></details>
+  <details><summary>Не будет ли контент «как у всех нейросетей»?</summary><p>Завод берёт идеи из роликов, которые залетели именно в твоей нише, и пишет под твои слова и тон, которые ты задаёшь один раз. Монтаж в твоих цветах и шрифтах. Со стороны это твой контент, просто его стало в 10 раз больше</p></details>
+  <details><summary>Я не блогер, зачем мне контент каждый день?</summary><p>Контент каждый день это заявки каждый день. Один ролик с кодовым словом приносит людей в директ, бот присылает им гайд и ведёт на твою услугу. Это система продаж, а не блог ради блога</p></details>
+  <details><summary>Как получить доступ?</summary><p>Оплата через lava.top картой. Доступ приходит на почту сразу после оплаты</p></details>
+</div></section>
+
+<section class="final"><div class="w">
+  <span class="chip" style="background:var(--lime);color:var(--ink)"><i></i>Пора</span>
+  <h2 class="h sec-h">Через час у тебя будет первый рилс в твоих цветах</h2>
+  <p class="sec-p" style="max-width:none">Пока ты читаешь эту страницу,<br>мой завод уже собирает ролики на завтра</p>
+  <div class="ctas">
+    <a class="btn lime" data-pay="zavod" href="#">Контент-завод · <span data-price="zavod">4 990</span> ₽</a>
+    <a class="btn ghost" data-pay="start" href="#">Старт в Claude · <span data-price="start">990</span> ₽</a>
+  </div>
+</div></section>
+
+<footer><div class="w">
+  <div>© 2026 Юра Снеговой · Нейросетевой</div>
+  <div style="display:flex;gap:20px;flex-wrap:wrap">
+    <a href="https://instagram.com/yura.neyrosetevoy" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://t.me/+IQG3bwl3RC85NDEy" target="_blank" rel="noopener">Telegram</a>
+    <a id="offer" href="#" target="_blank" rel="noopener">Оферта</a>
+    <span>Оплата через lava.top</span>
+  </div>
+</div></footer>
+
+<div class="modal" id="modal" hidden><div class="mbox">
+  <button class="mx" aria-label="Закрыть">×</button>
+  <div class="lbl" id="m-lbl"></div>
+  <h3 id="m-title"></h3>
+  <div class="m-price"><span id="m-price"></span> ₽</div>
+  <form id="m-form"><input id="m-email" type="email" required placeholder="Почта для доступа" autocomplete="email"><button class="btn blue" type="submit" id="m-go">Перейти к оплате</button></form>
+  <div class="m-note" id="m-note">Доступ придёт на эту почту сразу после оплаты. Оплата картой через lava.top</div>
+</div></div>
+<script>
+// ссылки на оплату из кабинета lava.top: вставить, когда продукты созданы
+const PAY = {
+  offer: ""   // страница оферты
+};
+// живой счётчик и цены с кассы: каждые 10 продаж цена ×1,2, счёт выставляется по текущей цене
+const SHOP = 'https://200-165-230-69.sslip.io/shop';
+const NAMES = { start: ['Старт', 'Старт в Claude с нуля'], zavod: ['Завод', 'Контент-завод'], consult: ['Лично', 'Личная консультация · 1,5 часа'] };
+const fmt = n => n.toLocaleString('ru-RU');
+let STATE = null;
+function paint() {
+  if (!STATE) return;
+  for (const [p, v] of Object.entries(STATE)) {
+    document.querySelectorAll(`[data-price="${p}"]`).forEach(e => e.textContent = fmt(v.price));
+    document.querySelectorAll(`[data-ctr="${p}"]`).forEach(c => {
+      c.querySelector('[data-f="in_tier"]').textContent = v.in_tier;
+      c.querySelector('[data-f="next_price"]').textContent = fmt(v.next_price) + ' ₽';
+      c.querySelector('[data-f="bar"]').style.width = (v.in_tier / v.tier * 100) + '%';
+      c.classList.add('on');
+    });
+  }
+}
+fetch(SHOP + '/state').then(r => r.json()).then(d => { STATE = d; paint(); }).catch(() => {});
+const modal = document.getElementById('modal');
+let cur = null;
+document.querySelectorAll('[data-pay]').forEach(a => {
+  const p = a.dataset.pay;
+  a.addEventListener('click', e => {
+    e.preventDefault(); cur = p;
+    document.getElementById('m-lbl').textContent = NAMES[p][0];
+    document.getElementById('m-title').textContent = NAMES[p][1];
+    document.getElementById('m-price').textContent = fmt(STATE && STATE[p] ? STATE[p].price : ({ start: 990, zavod: 4990, consult: 20000 })[p]);
+    document.getElementById('m-note').textContent = p === 'consult' ? 'Чек придёт на эту почту. После оплаты напиши мне в Instagram, выберем время созвона' : 'Доступ придёт на эту почту сразу после оплаты. Оплата картой через lava.top';
+    modal.hidden = false; document.getElementById('m-email').focus();
+  });
+});
+modal.addEventListener('click', e => { if (e.target === modal || e.target.classList.contains('mx')) modal.hidden = true; });
+document.getElementById('m-form').addEventListener('submit', async e => {
+  e.preventDefault();
+  const go = document.getElementById('m-go'), note = document.getElementById('m-note');
+  go.disabled = true; go.textContent = 'Готовлю счёт…';
+  try {
+    const r = await fetch(SHOP + '/buy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ product: cur, email: document.getElementById('m-email').value }) });
+    const d = await r.json();
+    if (d.url) { location.href = d.url; return; }
+    note.textContent = d.error || 'Не получилось, попробуй ещё раз';
+  } catch { note.textContent = 'Нет связи, попробуй ещё раз'; }
+  go.disabled = false; go.textContent = 'Перейти к оплате';
+});
+if (PAY.offer) document.getElementById('offer').href = PAY.offer; else document.getElementById('offer').remove();
+const tr = document.getElementById('track');
+document.querySelectorAll('.arr').forEach(b => b.onclick = () => tr.scrollBy({ left: +b.dataset.d * tr.clientWidth * 0.8, behavior: 'smooth' }));
+let dx = null, sl = 0;  // перетаскивание мышью на десктопе
+tr.addEventListener('mousedown', e => { dx = e.pageX; sl = tr.scrollLeft; tr.classList.add('drag'); });
+addEventListener('mouseup', () => { dx = null; tr.classList.remove('drag'); });
+tr.addEventListener('mousemove', e => { if (dx !== null) tr.scrollLeft = sl - (e.pageX - dx); });
+const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: .12 });
+document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+</script>
+</body>
+</html>
