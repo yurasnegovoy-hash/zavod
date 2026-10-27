@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Доступ к материалам · Нейросетевой</title>
+<link rel="icon" href="media/avatar.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@800;900&family=Oswald:wght@700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#F6F0E4;--ink:#141414;--blue:#1F4BFF;--coral:#FF5A1F;--lime:#C6F432;--dim:rgba(20,20,20,.62);--line:rgba(20,20,20,.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--cream);color:var(--ink);font:16.5px/1.55 Inter,system-ui,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:18px}
+.card{width:100%;max-width:460px;background:#fff;border-radius:30px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.35)}
+.top{position:relative;padding:28px 24px 22px;color:#fff;background:radial-gradient(120% 80% at 80% 0%,#6E8BFF 0%,transparent 60%),linear-gradient(180deg,#2F5BFF,#1638D8);overflow:hidden}
+.top h1{font:700 52px/.9 Oswald,sans-serif;text-transform:uppercase;position:relative;z-index:1}
+.top h1 span{color:var(--lime);display:block}
+.top img{position:absolute;right:-14px;bottom:-34px;width:150px}
+.body{padding:22px 24px 26px}
+.body p{color:var(--dim);font-size:15px;margin-bottom:14px}
+input{width:100%;font:500 17px Inter,sans-serif;padding:16px 18px;border-radius:16px;border:2px solid var(--line);background:var(--cream);margin-bottom:12px}
+input:focus{outline:none;border-color:var(--blue)}
+button{width:100%;border:0;border-radius:16px;padding:18px;font:800 15px Unbounded,sans-serif;text-transform:uppercase;background:var(--blue);color:#fff;cursor:pointer;box-shadow:0 8px 0 -2px #0f2fb8}
+button:disabled{opacity:.6}
+.msg{margin-top:14px;font-size:14.5px;color:var(--dim);text-align:center}
+.links{display:grid;gap:12px;margin-top:6px}
+.lk{display:block;text-decoration:none;border-radius:20px;padding:18px 20px;color:inherit}
+.lk h3{font:800 16px/1.2 Unbounded,sans-serif;text-transform:uppercase}
+.lk p{margin:6px 0 0;font-size:14px;opacity:.8;color:inherit}
+.lk.z{background:var(--blue);color:#fff}.lk.s{background:var(--lime)}
+.small{font-size:13px;color:var(--dim);text-align:center;margin-top:16px}
+.small a{color:var(--blue)}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="top"><h1>Твой<span>доступ</span></h1><img src="media/mascot_cut.webp" alt=""></div>
+  <div class="body" id="body">
+    <p>Введи почту, которую указывал при оплате. Откроются материалы твоего тарифа</p>
+    <form id="f"><input id="email" type="email" required placeholder="Почта" autocomplete="email"><button id="go" type="submit">Открыть материалы</button></form>
+    <div class="msg" id="msg"></div>
+    <div class="small">Не находит покупку? Напиши в Instagram <a href="https://instagram.com/yura.neyrosetevoy" target="_blank" rel="noopener">@yura.neyrosetevoy</a>, открою вручную</div>
+  </div>
+</div>
+<script>
+const SHOP = 'https://200-165-230-69.sslip.io/shop';
+const CARDS = {
+  zavod: ['z', 'Контент-завод', 'Стартовый набор, модули и библиотека форматов'],
+  start: ['s', 'Квест «Старт в Claude»', '10 уровней с нуля до первого агента']
+};
+document.getElementById('f').addEventListener('submit', async e => {
+  e.preventDefault();
+  const go = document.getElementById('go'), msg = document.getElementById('msg');
+  go.disabled = true; go.textContent = 'Ищу покупку…'; msg.textContent = '';
+  try {
+    const r = await fetch(SHOP + '/access', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: document.getElementById('email').value }) });
+    const d = await r.json();
+    const keys = Object.keys(d.links || {}).filter(k => d.links[k]);
+    if (keys.length) {
+      document.getElementById('f').outerHTML = '<div class="links">' + ['zavod', 'start'].filter(k => keys.includes(k)).map(k =>
+        `<a class="lk ${CARDS[k][0]}" href="${d.links[k]}" target="_blank" rel="noopener"><h3>${CARDS[k][1]} →</h3><p>${CARDS[k][2]}</p></a>`).join('') + '</div>';
+      msg.textContent = 'Сохрани ссылки в закладки';
+      return;
+    }
+    msg.textContent = d.error || 'Покупка с этой почтой не найдена. Если оплатил только что, подожди минуту и попробуй ещё раз';
+  } catch { msg.textContent = 'Нет связи, попробуй ещё раз'; }
+  go.disabled = false; go.textContent = 'Открыть материалы';
+});
+</script>
+</body>
+</html>
