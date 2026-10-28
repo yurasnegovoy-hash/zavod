@@ -430,7 +430,7 @@ footer a{text-decoration:underline}
       <div class="lbl">Завод</div>
       <h3>Контент-завод</h3>
       <div class="for">Монтаж и автоматизация: система сама делает контент для YouTube, Reels и Threads</div>
-      <div class="price"><span data-price="zavod">4 990</span> ₽</div>
+      <div class="price"><span data-price="zavod">9 990</span> ₽</div>
       <div class="ctr" data-ctr="zavod"><div class="ctr-t"><span>Продано <b data-f="in_tier">0</b> из 10 по этой цене</span><span>дальше <b data-f="next_price">…</b></span></div><div class="ctr-bar"><i data-f="bar"></i></div><div class="ctr-n">Каждые 10 продаж цена растёт на 20%</div></div>
       <ul>
         <li>10 видео-модулей: от банка хитов до утреннего автопилота</li>
@@ -441,14 +441,14 @@ footer a{text-decoration:underline}
                 <li>Квест «Старт в Claude с нуля» в подарок</li>
         <li>Чат участников 30 дней</li>
       </ul>
-      <a class="btn" data-pay="zavod" href="#">Собрать завод за <span data-price="zavod">4 990</span> ₽</a>
+      <a class="btn" data-pay="zavod" href="#">Собрать завод за <span data-price="zavod">9 990</span> ₽</a>
       <div class="pm">Доступ сразу и навсегда. Дешевле одной недели монтажёра, работает каждый день</div>
     </div>
     <div class="plan reveal">
       <div class="lbl">Лично</div>
       <h3>Личная консультация</h3>
       <div class="for">Когда хочешь разобрать именно свою ситуацию со мной</div>
-      <div class="price">20 000 ₽ <small>· 1,5 часа</small></div>
+      <div class="price">19 990 ₽ <small>· 1,5 часа</small></div>
       <ul>
         <li>Созвон со мной 1,5 часа</li>
         <li>Разбор твоей ниши, упаковки и контента</li>
@@ -467,7 +467,7 @@ footer a{text-decoration:underline}
   <h2 class="h sec-h reveal">Что внутри</h2>
   <div class="prog">
     <div class="box reveal">
-      <h3>Контент-завод <span>4 990 ₽</span></h3>
+      <h3>Контент-завод <span>9 990 ₽</span></h3>
       <details open><summary><b>00</b>Как устроен завод</summary><p>Вся схема целиком, сколько стоит в месяц и что можно выкинуть на старте</p></details>
       <details><summary><b>01</b>Рабочее место</summary><p>Claude Code с нуля, подписки, сервер. Что обязательно, что по желанию</p></details>
       <details><summary><b>02</b>Банк идей из конкурентов</summary><p>Собираешь 100+ залетевших роликов ниши с цифрами и раскладываешь каждый на хук, механику и призыв</p></details>
@@ -548,7 +548,7 @@ footer a{text-decoration:underline}
   <h2 class="h sec-h">Через час у тебя будет первый рилс в твоих цветах</h2>
   <p class="sec-p" style="max-width:none">Пока ты читаешь эту страницу,<br>мой завод уже собирает ролики на завтра</p>
   <div class="ctas">
-    <a class="btn lime" data-pay="zavod" href="#">Контент-завод · <span data-price="zavod">4 990</span> ₽</a>
+    <a class="btn lime" data-pay="zavod" href="#">Контент-завод · <span data-price="zavod">9 990</span> ₽</a>
     <a class="btn ghost" data-pay="start" href="#">Старт в Claude · <span data-price="start">990</span> ₽</a>
   </div>
 </div></section>
@@ -602,7 +602,7 @@ document.querySelectorAll('[data-pay]').forEach(a => {
     e.preventDefault(); cur = p;
     document.getElementById('m-lbl').textContent = NAMES[p][0];
     document.getElementById('m-title').textContent = NAMES[p][1];
-    document.getElementById('m-price').textContent = fmt(STATE && STATE[p] ? STATE[p].price : ({ start: 990, zavod: 4990, consult: 20000 })[p]);
+    document.getElementById('m-price').textContent = fmt(STATE && STATE[p] ? STATE[p].price : ({ start: 990, zavod: 9990, consult: 19990 })[p]);
     document.getElementById('m-note').textContent = p === 'consult' ? 'Чек придёт на эту почту. После оплаты напиши мне в Instagram, выберем время созвона' : 'Доступ придёт на эту почту сразу после оплаты. Оплата картой через lava.top';
     modal.hidden = false; document.getElementById('m-email').focus();
   });
